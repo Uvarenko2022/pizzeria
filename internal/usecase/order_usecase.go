@@ -13,22 +13,32 @@ func NewOrderUC(repo repo.IOrderRepo) *OrderUC {
 	return &OrderUC{repo: repo}
 }
 
-func (app *OrderUC) CreateOrder(order *entity.Order, food []entity.Food) error{
-	for i := range food {
-		order.Food = append(order.Food, &food[i])
+func (app *OrderUC) CreateOrder(order *entity.OrderRequest, food []entity.Food) error {
+	norder := &entity.Order{}
+	for i, v := range food {
+		norder.Food = append(norder.Food, &food[i])
+		norder.TotalCost += v.Cost
 	}
 
-	return app.repo.CreateOrder(order)
+	norder.State = order.State
+	norder.Comment = order.Comment
+
+	return app.repo.CreateOrder(norder)
 }
 
 func (app *OrderUC) GetOrders(limit int, offset int) ([]entity.Order, error) {
 	return app.repo.GetOrders(limit, offset)
 }
 
-func (app *OrderUC) UpdateOrder(order *entity.Order, food []entity.Food) error{
-	for _, v := range food {
-		order.Food = append(order.Food, &v)
+func (app *OrderUC) UpdateOrder(order *entity.OrderRequest, food []entity.Food) error {
+	norder := &entity.Order{}
+	for i, v := range food {
+		norder.Food = append(norder.Food, &food[i])
+		norder.TotalCost += v.Cost
 	}
 
-	return app.repo.UpdateOrder(order)
+	norder.State = order.State
+	norder.Comment = order.Comment
+
+	return app.repo.UpdateOrder(norder)
 }

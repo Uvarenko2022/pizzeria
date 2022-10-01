@@ -10,9 +10,9 @@ import (
 	"github.com/go-chi/chi"
 )
 
-//Order
+// Order
 func (r *Rout) CreateOrder(w http.ResponseWriter, req *http.Request) {
-	item := &entity.Order{}
+	item := &entity.OrderRequest{}
 	json.NewDecoder(req.Body).Decode(item)
 
 	//validating
@@ -23,11 +23,10 @@ func (r *Rout) CreateOrder(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	food, err := r.uc.IFoodUC.GetFood(item.FoodIds)
-
+	//foods
+	food, err := r.uc.GetFood(item.FoodIds)
 	if err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("can't get food for order", err)
 	}
 
 	if err := r.uc.CreateOrder(item, food); err != nil {
@@ -38,7 +37,7 @@ func (r *Rout) CreateOrder(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *Rout) UpdateOrder(w http.ResponseWriter, req *http.Request) {
-	item := &entity.Order{}
+	item := &entity.OrderRequest{}
 	json.NewDecoder(req.Body).Decode(item)
 
 	food, err := r.uc.IFoodUC.GetFood(item.FoodIds)
