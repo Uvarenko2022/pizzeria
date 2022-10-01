@@ -21,6 +21,7 @@ func New(uc *usecase.PiizzaUseCase, tr validate.Translate) *Rout {
 func RegisterRouts(rout *Rout) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
 	//food
 	r.Route("/food", func(router chi.Router) {
