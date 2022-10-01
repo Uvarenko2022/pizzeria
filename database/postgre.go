@@ -28,9 +28,9 @@ func NewPostgre() *Postgre {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Fatal("zalupen`", err)
+		log.Fatal("cannot connect to", err)
 	}
-	db.AutoMigrate(&entity.Order{}, &entity.Food{})
+	db.AutoMigrate(&entity.Order{}, &entity.Food{}, &entity.Ingridient{})
 
 	return &Postgre{db}
 }
@@ -40,7 +40,6 @@ func SetUpHookCache(db *Postgre, ctx context.Context, food func(ids []uint) ([]e
 		fd, err := food([]uint{})
 
 		if err != nil {
-			fmt.Println("NO FUCKING FOOD")
 			fmt.Println(err)
 		}
 

@@ -47,7 +47,6 @@ func Run() {
 	food, err := usecase.IFoodUC.GetFood([]uint{})
 
 	if err != nil {
-		fmt.Println("FUCKING APP")
 		fmt.Println(err)
 	}
 
