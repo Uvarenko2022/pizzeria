@@ -6,6 +6,13 @@ import (
 	"context"
 )
 
+type IIngRepo interface {
+	AddIng(ing *entity.Ingridient) error
+	DeleteIng(id uint) error
+	UpdateIng(ing *entity.Ingridient) error
+	GetIng() ([]entity.Ingridient, error)
+}
+
 type IFoodRepo interface {
 	GetProperFood(ids []uint) ([]entity.Food, error)
 	GetAllFood() ([]entity.Food, error)
@@ -29,6 +36,7 @@ type Repository struct {
 	Ifoodr    IFoodRepo
 	Iordrrepo IOrderRepo
 	Ichrepo   ICacheRepo
+	IIngRepo  IIngRepo
 }
 
 func NewRepository(db *database.Postgre, cache *database.Redis) *Repository {
@@ -36,5 +44,6 @@ func NewRepository(db *database.Postgre, cache *database.Redis) *Repository {
 		Ifoodr:    newFoodR(db),
 		Iordrrepo: newOrderR(db),
 		Ichrepo:   newCacheR(cache),
+		IIngRepo:  newIngR(db),
 	}
 }

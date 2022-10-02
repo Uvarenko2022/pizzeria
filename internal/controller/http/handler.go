@@ -40,5 +40,13 @@ func RegisterRouts(rout *Rout) {
 		router.Get("/limit={limit}offset={offset}", rout.GetOrders)
 	})
 
+	//ingridients
+	r.Route("/ingridient", func(router chi.Router) {
+		router.Get("/get", rout.GetIngs)
+		router.Post("/add", rout.AddIngs)
+		router.Patch("/update", rout.UpdateIng)
+		router.Delete("/delete-{id}", rout.DeleteIng)
+	})
+
 	http.ListenAndServe(":8080", r)
 }

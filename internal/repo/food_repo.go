@@ -29,7 +29,7 @@ func (r *FoodRepo) Put(f *entity.Food) error {
 	return result.Error
 }
 
-func (r *FoodRepo) UpdateFood(food *entity.Food) error{
+func (r *FoodRepo) UpdateFood(food *entity.Food) error {
 	result := r.DB.Where("id = ?", food.ID).Find(food)
 	return result.Error
 }
