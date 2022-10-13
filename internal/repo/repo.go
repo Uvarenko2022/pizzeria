@@ -16,7 +16,7 @@ type IIngRepo interface {
 type IFoodRepo interface {
 	GetProperFood(ids []uint) ([]entity.Food, error)
 	GetAllFood() ([]entity.Food, error)
-	Put(f *entity.Food) error
+	Put(f *entity.Food, masses []float32) error
 	UpdateFood(food *entity.Food) error
 }
 
