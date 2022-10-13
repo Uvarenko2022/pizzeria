@@ -3,6 +3,7 @@ package repo
 import (
 	"Uvarenko2022/restaurant/database"
 	"Uvarenko2022/restaurant/internal/entity"
+	"gorm.io/gorm"
 )
 
 type FoodRepo struct {
@@ -23,10 +24,25 @@ func (r *FoodRepo) GetAllFood() ([]entity.Food, error) {
 	return items, result.Error
 }
 
-func (r *FoodRepo) Put(f *entity.Food) error {
-	result := r.DB.Create(f)
+func (r *FoodRepo) Put(f *entity.Food, masses []float32) error {
+	err := r.DB.Transaction(func(tx *gorm.DB) error {
+		err := r.DB.Create(f).Error
+		if err != nil {
+			return err
+		}
 
-	return result.Error
+		for i, v := range f.Ingridients {
+			err := r.DB.Model(&entity.FoodIng{}).
+				Where("food_id = ? AND ingridient_id = ?", f.ID, v.ID).
+				Update("mass", masses[i]).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	return err
 }
 
 func (r *FoodRepo) UpdateFood(food *entity.Food) error {
