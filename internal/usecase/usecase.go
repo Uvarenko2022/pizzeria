@@ -16,11 +16,16 @@ type PiizzaUseCase struct {
 }
 
 func New(repo *repo.Repository) *PiizzaUseCase {
+	inuc := NewIngUC(repo.IIngRepo)
+	fuc := NewFoodUC(repo.Ifoodr, inuc.GetIng)
+	ouc := NewOrderUC(repo.Iordrrepo, fuc.GetFood)
+	cuc := NewCacheUC(repo.Ichrepo)
+
 	return &PiizzaUseCase{
-		NewFoodUC(repo.Ifoodr),
-		NewOrderUC(repo.Iordrrepo),
-		NewCacheUC(repo.Ichrepo),
-		NewIngUC(repo.IIngRepo),
+		fuc,
+		ouc,
+		cuc,
+		inuc,
 	}
 }
 
@@ -33,14 +38,14 @@ type IIngUC interface {
 
 type IFoodUC interface {
 	GetFood(ids []uint) ([]entity.Food, error)
-	AddFood(food *entity.Food) error
+	AddFood(food *entity.FoodRequest) error
 	UpdateFood(food *entity.Food) error
 }
 
 type IOrderUC interface {
-	CreateOrder(order *entity.OrderRequest, food []entity.Food) error
+	CreateOrder(order *entity.OrderRequest) error
 	GetOrders(limit int, offset int) ([]entity.Order, error)
-	UpdateOrder(order *entity.OrderRequest, food []entity.Food) error
+	UpdateOrder(order *entity.OrderRequest) error
 }
 
 type ICacheUC interface {
