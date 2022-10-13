@@ -13,7 +13,11 @@ import (
 // Order
 func (r *Rout) CreateOrder(w http.ResponseWriter, req *http.Request) {
 	item := &entity.OrderRequest{}
-	json.NewDecoder(req.Body).Decode(item)
+	if err := json.NewDecoder(req.Body).Decode(item); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	//validating
 	if err := r.trans.Struct(item); err != nil {
@@ -23,13 +27,7 @@ func (r *Rout) CreateOrder(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//foods
-	food, err := r.uc.GetFood(item.FoodIds)
-	if err != nil {
-		log.Println("can't get food for order", err)
-	}
-
-	if err := r.uc.CreateOrder(item, food); err != nil {
+	if err := r.uc.CreateOrder(item); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,16 +36,13 @@ func (r *Rout) CreateOrder(w http.ResponseWriter, req *http.Request) {
 
 func (r *Rout) UpdateOrder(w http.ResponseWriter, req *http.Request) {
 	item := &entity.OrderRequest{}
-	json.NewDecoder(req.Body).Decode(item)
-
-	food, err := r.uc.IFoodUC.GetFood(item.FoodIds)
-
-	if err != nil {
+	if err := json.NewDecoder(req.Body).Decode(item); err != nil {
 		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	if err := r.uc.UpdateOrder(item, food); err != nil {
+	if err := r.uc.UpdateOrder(item); err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -69,5 +64,9 @@ func (r *Rout) GetOrders(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(result)
+	if err := json.NewEncoder(w).Encode(result); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 }

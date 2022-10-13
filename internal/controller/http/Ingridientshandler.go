@@ -12,15 +12,17 @@ import (
 )
 
 func (r *Rout) AddIngs(w http.ResponseWriter, req *http.Request) {
-	var item *entity.Ingridient
+	item := &entity.Ingridient{}
 	if err := json.NewDecoder(req.Body).Decode(item); err != nil {
 		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	if err := r.uc.IIngUC.AddIng(item); err != nil {
 		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -30,6 +32,7 @@ func (r *Rout) DeleteIng(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	r.uc.IIngUC.DeleteIng(uint(id))
@@ -40,6 +43,7 @@ func (r *Rout) UpdateIng(w http.ResponseWriter, req *http.Request) {
 	if err := json.NewDecoder(req.Body).Decode(item); err != nil {
 		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	if err := r.uc.IIngUC.UpdateIng(item); err != nil {
@@ -53,6 +57,7 @@ func (r *Rout) GetIngs(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	json.NewEncoder(w).Encode(items)
 }

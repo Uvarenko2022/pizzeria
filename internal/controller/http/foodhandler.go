@@ -8,8 +8,12 @@ import (
 )
 
 func (r *Rout) AddFood(w http.ResponseWriter, req *http.Request) {
-	item := &entity.Food{}
-	json.NewDecoder(req.Body).Decode(item)
+	item := &entity.FoodRequest{}
+	if err := json.NewDecoder(req.Body).Decode(item); err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	if err := r.trans.Struct(item); err != nil {
 		errs := r.trans.TranslateError(err)
@@ -31,6 +35,7 @@ func (r *Rout) GetFood(w http.ResponseWriter, req *http.Request) {
 		errs := r.trans.TranslateError(err)
 		log.Println(errs)
 		http.Error(w, errs, http.StatusInternalServerError)
+		return
 	}
 
 	json.NewEncoder(w).Encode(result)
