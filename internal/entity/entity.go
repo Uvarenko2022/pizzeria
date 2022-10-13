@@ -27,6 +27,12 @@ const (
 	Cooked
 )
 
+type FoodIng struct {
+	FoodID       uint
+	IngridientId uint
+	Mass         float32
+}
+
 type Food struct {
 	gorm.Model
 	Type        FoodType      `json:"type" validate:"required,type"`

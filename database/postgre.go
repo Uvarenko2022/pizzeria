@@ -26,11 +26,17 @@ func NewPostgre() *Postgre {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		log.Fatal("cannot connect to", err)
 	}
-	db.AutoMigrate(&entity.Order{}, &entity.Food{}, &entity.Ingridient{})
+
+	if err := db.SetupJoinTable(&entity.Food{}, "Ingridients", &entity.FoodIng{}); err != nil {
+		log.Println(err)
+		panic(err)
+	}
+	if err := db.AutoMigrate(&entity.Order{}, &entity.Food{}, &entity.Ingridient{}, &entity.FoodIng{}); err != nil {
+		panic(err)
+	}
 
 	return &Postgre{db}
 }
